@@ -22,7 +22,7 @@ The application queries data from CSV files located in the [data](app.py#L96) fo
 
 ## Verified Queries
 
-The verified SQL queries and their descriptions are stored in YAML files located in the [verified-queries](app.py#L82) folder. Descriptions are used to semantically map prompts to queries:
+The verified SQL queries and their descriptions are stored in YAML files located in the `verified-queries` folder. Descriptions are used to semantically map prompts to queries:
 
 - `most-recent-purchases.yaml`: Returns the 5 most recent purchases
 
@@ -34,17 +34,17 @@ The verified SQL queries and their descriptions are stored in YAML files located
 
 ## Functions
 
-- [get_verified_queries_and_embeddings(directory_path, embedding_model)](app.py#L9): Reads YAML files from the specified directory, loads the verified SQL queries and their descriptions, and generates embeddings for the descriptions using the provided SentenceTransformer model.
+- `get_verified_queries_and_embeddings(directory_path, embedding_model)`: Reads YAML files from the specified directory, loads the verified SQL queries and their descriptions, and generates embeddings for the descriptions using the provided SentenceTransformer model.
 
-- [get_verified_sql(embedding_model, user_question, verified_queries_dict, minimum_similarity)](app.py#L26): Generates an embedding for the user's question, calculates the cosine similarity between the question's embedding and the embeddings of the verified queries, and returns the SQL of the most similar query if its similarity is above the specified minimum similarity threshold.
+- `get_verified_sql(embedding_model, user_question, verified_queries_dict, minimum_similarity)`: Generates an embedding for the user's question, calculates the cosine similarity between the question's embedding and the embeddings of the verified queries, and returns the SQL of the most similar query if its similarity is above the specified minimum similarity threshold.
 
-- [chat_with_groq(client, prompt, model)](app.py#L56): Sends a chat message to the Groq API and returns the content of the response.
+- `chat_with_groq(client, prompt, model)`: Sends a chat message to the Groq API and returns the content of the response.
 
-- [execute_duckdb_query(query)](app.py#L66): Executes the provided SQL query using DuckDB and returns the result as a DataFrame.
+- `execute_duckdb_query(query)`: Executes the provided SQL query using DuckDB and returns the result as a DataFrame.
 
-- [get_summarization(client, user_question, df, model, additional_context)](app.py#L76): Generates a prompt that includes the user's question and the DataFrame result, sends the prompt to the Groq API for summarization, and returns the summarized response.
+- `get_summarization(client, user_question, df, model, additional_context`: Generates a prompt that includes the user's question and the DataFrame result, sends the prompt to the Groq API for summarization, and returns the summarized response.
 
-- [main()](app.py#L89): The main function of the application, which initializes the Groq client and the SentenceTransformer model, gets user input from the Streamlit interface, retrieves and executes the most similar verified SQL query, and displays the result and its summarization.
+- `main()`: The main function of the application, which initializes the Groq client and the SentenceTransformer model, gets user input from the Streamlit interface, retrieves and executes the most similar verified SQL query, and displays the result and its summarization.
 
 ## Usage
 
@@ -62,8 +62,8 @@ This will start the Streamlit server and open the application in your web browse
 
 This application is designed to be flexible and can be easily customized to work with your own data. If you want to use your own data, follow these steps:
 
-1. **Replace the CSV files**: The application queries data from CSV files located in the [data](app.py#L96) folder. Replace these files with your own CSV files.
+1. **Replace the CSV files**: The application queries data from CSV files located in the `data` folder. Replace these files with your own CSV files.
 
-2. **Modify the verified queries**: The verified SQL queries and their descriptions are stored in YAML files located in the [verified-queries](app.py#L82) folder. Replace these files with your own verified SQL queries and descriptions.
+2. **Modify the verified queries**: The verified SQL queries and their descriptions are stored in YAML files located in the `verified-queries` folder. Replace these files with your own verified SQL queries and descriptions.
 
 By following these steps, you can tailor the DuckDB Query Retriever to your own data and use cases. Feel free to experiment and build off this repository to create your own powerful data querying applications.

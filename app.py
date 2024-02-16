@@ -11,6 +11,11 @@ import sqlparse
 
 
 def get_verified_queries_and_embeddings(directory_path, embedding_model):
+    """
+    This function loads pre-verified SQL queries and their descriptions from YAML files in a specified directory.
+    It generates embeddings for the descriptions using a provided SentenceTransformer model and returns a dictionary
+    mapping file names to their corresponding queries, descriptions, and embeddings.
+    """
     verified_queries_yaml_files = glob.glob(os.path.join(directory_path, '*.yaml'))
     verified_queries_dict = {}
     for file in verified_queries_yaml_files:
@@ -26,7 +31,13 @@ def get_verified_queries_and_embeddings(directory_path, embedding_model):
 
 
 def get_verified_sql(embedding_model,user_question,verified_queries_dict,minimum_similarity):
-    
+    """
+    This function takes a user's question and finds the most similar pre-verified SQL query based on cosine similarity
+    between the question's embedding and the embeddings of the verified queries. If the highest similarity is above a 
+    specified minimum similarity threshold, it formats and returns the SQL of the most similar query. Otherwise, it 
+    returns None and displays a message indicating that it couldn't find a suitable verified query.
+    """
+
     # Get embeddings for user question
     prompt_embeddings = embedding_model.encode(user_question)
 
@@ -55,6 +66,10 @@ def get_verified_sql(embedding_model,user_question,verified_queries_dict,minimum
 
 
 def chat_with_groq(client,prompt,model):
+    """
+    This function sends a chat message to the Groq API and returns the content of the response.
+    It takes three parameters: the Groq client, the chat prompt, and the model to use for the chat.
+    """
     
     completion = client.chat.completions.create(
     model=model,
@@ -70,6 +85,12 @@ def chat_with_groq(client,prompt,model):
 
 
 def execute_duckdb_query(query):
+    """
+    This function executes a provided SQL query on a DuckDB database and returns the result as a DataFrame.
+    It changes the current working directory to the 'data' folder where the CSV files are located, 
+    creates a connection to a DuckDB database in memory, executes the query, fetches the result as a DataFrame,
+    and then resets the current working directory to its original location.
+    """
 
     original_cwd = os.getcwd()
     os.chdir('data')
@@ -80,11 +101,15 @@ def execute_duckdb_query(query):
     finally:
         os.chdir(original_cwd)
 
-
     return query_result
 
 
 def get_summarization(client,user_question,df,model,additional_context):
+    """
+    This function generates a prompt that includes the user's question and the DataFrame result, sends the prompt to the Groq API for summarization, and returns the summarized response.
+    If additional context is provided, it is included in the prompt.
+    """
+
     prompt = '''
     A user asked the following question pertaining to local database tables:
     
@@ -108,19 +133,28 @@ def get_summarization(client,user_question,df,model,additional_context):
 
 
 def main():
+    """
+    This is the main function that runs the application. It initializes the Groq client and the SentenceTransformer model,
+    gets user input from the Streamlit interface, retrieves and executes the most similar verified SQL query, and displays
+    the result and its summarization.
+    """
     
+    # Initialize the Groq client
     groq_api_key = st.secrets["GROQ_API_KEY"]
     client = Groq(
         api_key=groq_api_key,
         base_url=st.secrets["GROQ_BASE_URL"]
     )
 
+    # Initialize the SentenceTransformer model
     embedding_model = SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2')
 
+    # Display the Groq logo
     spacer, col = st.columns([5, 1])  
     with col:  
         st.image('groqcloud_darkmode.png')
 
+    # Display the title and introduction of the application
     st.title("DuckDB Query Retriever")
     multiline_text = """
     Welcome! Ask questions about employee data or purchase details, like "Show the 5 most recent purchases" or "What was the most expensive purchase?". The app matches your question to pre-verified SQL queries for accurate results.
@@ -128,7 +162,7 @@ def main():
 
     st.markdown(multiline_text, unsafe_allow_html=True)
 
-    # Add customization sidebar
+    # Add customization options to the sidebar
     st.sidebar.title('Customization')
     additional_context = st.sidebar.text_input('Enter additional summarization context for the LLM here (i.e. write it in spanish):')
     model = st.sidebar.selectbox(
@@ -137,11 +171,15 @@ def main():
     )
     minimum_similarity = st.sidebar.slider('Minimum Similarity:', 1, 100, value=50)
 
+    # Get the user's question
     user_question = st.text_input("Ask a question:",value='How many Teslas were purchased?')
 
     if user_question:
 
+        # Load the verified queries and their embeddings
         verified_queries_dict = get_verified_queries_and_embeddings('verified-queries/', embedding_model)
+        
+        # Find the most similar verified SQL query to the user's question
         verified_sql_query = get_verified_sql(embedding_model,user_question,verified_queries_dict,minimum_similarity)
 
         # If a verified query is returned, generate the output and summarization
