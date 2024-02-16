@@ -1,6 +1,6 @@
 # DuckDB Query Retriever
 
-This repository contains a Streamlit application that allows users to ask questions about their DuckDB data. The application uses pre-verified SQL queries and their descriptions stored in YAML files to find the most similar query to the user's question, execute it against the data, and return the results. The application also uses the Groq API to generate natural language summaries of the query results.
+This repository contains a Streamlit application that allows users to ask questions about their DuckDB data using the Groq API. The application uses pre-verified SQL queries and their descriptions stored in YAML files to find the most similar query to the user's question, execute it against the data, and return the results (if a prompt is not similar to a vetted query, no data will be returned).
 
 ## Features
 
@@ -14,11 +14,23 @@ This repository contains a Streamlit application that allows users to ask questi
 
 ## Data
 
-The application queries data from CSV files located in the [data](app.py#L96) folder.
+The application queries data from CSV files located in the [data](app.py#L96) folder:
+
+- `employees.csv`: Contains employee data including their ID, full name, and email address.
+
+- `purchases.csv`: Records purchase details including purchase ID, date, associated employee ID, amount, and product name.
 
 ## Verified Queries
 
-The verified SQL queries and their descriptions are stored in YAML files located in the [verified-queries](app.py#L82) folder. Descriptions are used to semantically map prompts to queries.
+The verified SQL queries and their descriptions are stored in YAML files located in the [verified-queries](app.py#L82) folder. Descriptions are used to semantically map prompts to queries:
+
+- `most-recent-purchases.yaml`: Returns the 5 most recent purchases
+
+- `most-expensive-purchase.yaml`: Finds the most expensive purchases
+
+- `number-of-teslas.yaml`: Counts the number of Teslas purchased
+
+- `employees-without-purchases.yaml`: Gets employees without any recent purchases
 
 ## Functions
 

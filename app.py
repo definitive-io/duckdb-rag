@@ -122,7 +122,11 @@ def main():
         st.image('groqcloud_darkmode.png')
 
     st.title("DuckDB Query Retriever")
-    st.write("Ask questions about your DuckDB data, powered by Groq")
+    multiline_text = """
+    Welcome! Ask questions about employee data or purchase details, like "Show the 5 most recent purchases" or "What was the most expensive purchase?". The app matches your question to pre-verified SQL queries for accurate results.
+    """
+
+    st.markdown(multiline_text, unsafe_allow_html=True)
 
     # Add customization sidebar
     st.sidebar.title('Customization')
@@ -133,7 +137,7 @@ def main():
     )
     minimum_similarity = st.sidebar.slider('Minimum Similarity:', 1, 100, value=50)
 
-    user_question = st.text_input("Ask a question:")
+    user_question = st.text_input("Ask a question:",value='How many Teslas were purchased?')
 
     if user_question:
 
@@ -145,6 +149,7 @@ def main():
             results_df = execute_duckdb_query(verified_sql_query)
             st.markdown(results_df.to_html(index=False), unsafe_allow_html=True)
             summarization = get_summarization(client,user_question,results_df,model,additional_context)
+            st.write('')
             st.write(summarization.replace('$','\\$'))
 
 if __name__ == "__main__":
