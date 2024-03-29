@@ -15,6 +15,7 @@ def get_verified_queries_and_embeddings(directory_path, embedding_model):
     This function loads pre-verified SQL queries and their descriptions from YAML files in a specified directory.
     It generates embeddings for the descriptions using a provided SentenceTransformer model and returns a dictionary
     mapping file names to their corresponding queries, descriptions, and embeddings.
+    
     """
     verified_queries_yaml_files = glob.glob(os.path.join(directory_path, '*.yaml'))
     verified_queries_dict = {}
@@ -142,8 +143,7 @@ def main():
     # Initialize the Groq client
     groq_api_key = st.secrets["GROQ_API_KEY"]
     client = Groq(
-        api_key=groq_api_key,
-        base_url=st.secrets["GROQ_BASE_URL"]
+        api_key=groq_api_key
     )
 
     # Initialize the SentenceTransformer model
